@@ -18,11 +18,16 @@ export class ClientesService {
   }
 
   async findAll() {
-    return this.clienteRepository.find();
+    return this.clienteRepository.find({
+      relations: ['ventas'],
+    });
   }
 
   async findOne(id: number) {
-    const cliente = await this.clienteRepository.findOneBy({ id });
+    const cliente = await this.clienteRepository.findOne({
+      where: { id },
+      relations: ['ventas'],
+    });
     if (!cliente) {
       throw new NotFoundException(`Cliente no encontrado`);
     } 
