@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { Repository } from 'typeorm';
@@ -17,19 +17,27 @@ export class ClientesService {
     return await this.clienteRepository.save(nuevoCliente);
   }
 
-  findAll() {
+  async findAll() {
     return this.clienteRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cliente`;
+  async findOne(id: number) {
+    const cliente = await this.clienteRepository.findOneBy({ id });
+    if (!cliente) {
+      throw new NotFoundException(`Cliente no encontrado`);
+    } 
+    return cliente;
   }
 
-  update(id: number, updateClienteDto: UpdateClienteDto) {
-    return `This action updates a #${id} cliente`;
+  async update(id: number, updateClienteDto: UpdateClienteDto) {
+    const cliente = await this.findOne(id);
+    const clienteEditado = await this.clienteRepository.merge(cliente, updateClienteDto);
+    return await this.clienteRepository.save(clienteEditado);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cliente`;
+  async deshabilitar(id: number) {
+    const cliente = await this.findOne(id);
+    cliente.estado = 'inactivo';
+    return await this.clienteRepository.save(cliente);
   }
 }
