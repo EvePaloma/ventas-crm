@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Venta } from '../../ventas/entities/venta.entity';
 import { OneToMany } from 'typeorm';
+import { Tarea } from '../../tareas/entities/tarea.entity';
 
 @Entity()
 export class Cliente {
@@ -21,5 +22,8 @@ export class Cliente {
 
     @OneToMany(() => Venta, venta => venta.cliente)
     ventas: Venta[];
+
+    @OneToMany(() => Tarea, tarea => tarea.cliente)
+    tareas: Tarea[];
 
 }

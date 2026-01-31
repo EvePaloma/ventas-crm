@@ -5,6 +5,8 @@ import { ClientesModule } from './clientes/clientes.module';
 import { Cliente } from './clientes/entities/cliente.entity';
 import { VentasModule } from './ventas/ventas.module';
 import { Venta } from './ventas/entities/venta.entity';
+import { TareasModule } from './tareas/tareas.module';
+import { Tarea } from './tareas/entities/tarea.entity';
 
 @Module({
   imports: [
@@ -16,11 +18,12 @@ import { Venta } from './ventas/entities/venta.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Cliente, Venta],
+      entities: [Cliente, Venta, Tarea],
       synchronize: true,
     }),
     ClientesModule,
     VentasModule,
+    TareasModule,
   ],
 })
 export class AppModule {}
