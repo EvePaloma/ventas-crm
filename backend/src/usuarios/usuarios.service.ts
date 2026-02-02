@@ -48,4 +48,11 @@ export class UsuariosService {
     await this.usuarioRepository.remove(usuario);
     return { message: 'Usuario eliminado correctamente' };
   }
+
+  async findByEmailWhitPassword(email: string): Promise<Usuario | null> {
+    return await this.usuarioRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password', 'rol'],
+    });
+  }
 }

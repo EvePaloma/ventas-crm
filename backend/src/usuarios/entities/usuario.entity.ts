@@ -23,7 +23,7 @@ export class Usuario {
         enum: RolUsuario, 
         default: RolUsuario.USUARIO 
     })
-    role: RolUsuario;
+    rol: RolUsuario;
 
     @CreateDateColumn()
     fechaAlta: Date;

@@ -9,6 +9,7 @@ import { TareasModule } from './tareas/tareas.module';
 import { Tarea } from './tareas/entities/tarea.entity';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { Usuario } from './usuarios/entities/usuario.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Usuario } from './usuarios/entities/usuario.entity';
     VentasModule,
     TareasModule,
     UsuariosModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
