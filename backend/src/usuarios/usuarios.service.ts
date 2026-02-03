@@ -4,6 +4,7 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuariosService {
@@ -13,16 +14,23 @@ export class UsuariosService {
   ){}
 
   async create(createUsuarioDto: CreateUsuarioDto) {
-    try {
-      const nuevoUsuario = this.usuarioRepository.create(createUsuarioDto);
-      const usuarioGuardado = await this.usuarioRepository.save(nuevoUsuario);
-      return usuarioGuardado;
-    } catch (error) {
-      if (error.code === '23505') {
-        throw new BadRequestException('El correo ya está en uso');
-      }
-      throw new InternalServerErrorException('Error al crear el usuario');
-    }
+    const { password, ...datosUsuario } = createUsuarioDto;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const nuevoUsuario = this.usuarioRepository.create({
+      ...datosUsuario,
+      password: hashedPassword,
+    });
+
+    return await this.usuarioRepository.save(nuevoUsuario);
+  }
+
+  async findByEmailWhitPassword(email: string) {
+    return await this.usuarioRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password', 'rol'], 
+    });
   }
 
   async findAll() {
@@ -49,10 +57,4 @@ export class UsuariosService {
     return { message: 'Usuario eliminado correctamente' };
   }
 
-  async findByEmailWhitPassword(email: string): Promise<Usuario | null> {
-    return await this.usuarioRepository.findOne({
-      where: { email },
-      select: ['id', 'email', 'password', 'rol'],
-    });
-  }
 }

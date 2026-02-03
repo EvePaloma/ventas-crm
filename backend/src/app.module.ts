@@ -23,6 +23,7 @@ import { AuthModule } from './auth/auth.module';
       database: process.env.DB_DATABASE,
       entities: [Cliente, Venta, Tarea, Usuario],
       synchronize: true,
+      dropSchema: false,
     }),
     ClientesModule,
     VentasModule,

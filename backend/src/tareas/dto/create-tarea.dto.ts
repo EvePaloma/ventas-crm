@@ -5,6 +5,10 @@ export class CreateTareaDto {
     @IsNotEmpty()
     descripcion: string;
 
+    @IsString()
+    @IsOptional()
+    estado?: string;
+
     @IsDateString()
     @IsOptional()
     fechaLimite?: Date;

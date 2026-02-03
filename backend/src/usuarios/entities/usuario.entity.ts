@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, BeforeInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, BeforeInsert, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Cliente } from '../../clientes/entities/cliente.entity';
+import { Tarea } from 'src/tareas/entities/tarea.entity';
 
 export enum RolUsuario {
     ADMIN = 'admin',
@@ -28,8 +30,9 @@ export class Usuario {
     @CreateDateColumn()
     fechaAlta: Date;
 
-    @BeforeInsert()
-    async hashPassword() {
-        this.password = await bcrypt.hash(this.password, 10);
-    }
+    @OneToMany(() => Cliente, (cliente) => cliente.vendedor)
+    clientes: Cliente[];
+
+    @OneToMany(() => Tarea, (tarea) => tarea.vendedor)
+    tareas: Tarea[];
 }

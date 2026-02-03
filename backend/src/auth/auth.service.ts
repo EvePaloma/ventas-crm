@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsuariosService } from '../usuarios/usuarios.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { CreateUsuarioDto } from 'src/usuarios/dto/create-usuario.dto';
 
 @Injectable()
 export class AuthService {
@@ -10,20 +11,24 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) {}
 
-    async validarUsuario(email: string, password: string) {
-        const usuario = await this.usuariosService.findByEmailWhitPassword(email);
-        if (!usuario) {
-            throw new UnauthorizedException('Credenciales inválidas');
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, usuario.password);
-        if (!isPasswordValid) {
-            throw new UnauthorizedException('Credenciales inválidas');
-        }
-
-        const { password: usuarioPassword, ...resultado } = usuario;
-        return resultado;
+    async registrar(CreateUsuarioDto: CreateUsuarioDto ) {
+        return this.usuariosService.create(CreateUsuarioDto);
     }
+
+    async validarUsuario(email: string, passwordPlana: string) {
+    const usuario = await this.usuariosService.findByEmailWhitPassword(email);
+    
+    if (!usuario) throw new UnauthorizedException('Usuario no encontrado en DB');
+
+    const esValida = await bcrypt.compare(passwordPlana, usuario.password);
+
+    if (!esValida) {
+        throw new UnauthorizedException('Contraseña incorrecta');
+    }
+
+    const { password, ...resultado } = usuario;
+    return resultado;
+}
 
     async login(usuario: any) {
         const payload = { email: usuario.email, sub: usuario.id, rol: usuario.rol };

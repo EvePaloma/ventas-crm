@@ -16,27 +16,33 @@ export class TareasService {
     private cacheManager: Cache,
   ) {}
 
-
-  async create(createTareaDto: CreateTareaDto) {
+  async create(createTareaDto: CreateTareaDto, usuario: any) {
     const { clienteId, ...datosTarea } = createTareaDto;
+    const vendedorId = usuario.id || usuario.sub;
+
     const nuevaTarea = this.tareaRepository.create({
       ...datosTarea,
       cliente: { id: clienteId } as any,
+      vendedor: { id: vendedorId } as any,
     });
-    const tareaGuardada = await this.tareaRepository.save(nuevaTarea);
-    await this.cacheManager.del('todas_las_tareas');
-    return tareaGuardada;
+
+    try {
+      const tareaGuardada = await this.tareaRepository.save(nuevaTarea);
+      await this.cacheManager.del('todas_las_tareas');
+      return tareaGuardada;
+    } catch (error) {
+      throw error; 
+    }
   }
 
   async findAll() {
     const tareasCache = await this.cacheManager.get<Tarea[]>('todas_las_tareas');
-    if (tareasCache) {
-      console.log('Datos de tareas obtenidos de REDIS (caché)');
-      return tareasCache;
-    }
+    if (tareasCache) return tareasCache;
 
-    console.log('Datos de tareas obtenidos de la BD');
-    const tareas =  await this.tareaRepository.find({ relations: ['cliente'] });
+    const tareas = await this.tareaRepository.find({ 
+      relations: ['cliente', 'vendedor'] 
+    });
+    
     await this.cacheManager.set('todas_las_tareas', tareas);
     return tareas;
   }
@@ -44,21 +50,18 @@ export class TareasService {
   async findOne(id: number) {
     const tarea = await this.tareaRepository.findOne({
       where: { id },
-      relations: ['cliente'],
+      relations: ['cliente', 'vendedor'],
     });
-    if (!tarea) {
-      throw new NotFoundException(`Tarea no encontrada`);
-    }
+
+    if (!tarea) throw new NotFoundException(`Tarea no encontrada`);
     return tarea;
   }
 
   async update(id: number, updateTareaDto: UpdateTareaDto) {
     const tarea = await this.findOne(id);
-    if (!tarea) {
-      throw new NotFoundException(`Tarea no encontrada`);
-    }
     const tareaEditada = this.tareaRepository.merge(tarea, updateTareaDto);
     const tareaActualizada = await this.tareaRepository.save(tareaEditada);
+    
     await this.cacheManager.del('todas_las_tareas');
     return tareaActualizada;
   }

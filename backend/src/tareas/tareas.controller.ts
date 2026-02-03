@@ -1,18 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { TareasService } from './tareas.service';
 import { CreateTareaDto } from './dto/create-tarea.dto';
 import { UpdateTareaDto } from './dto/update-tarea.dto';
+import { AuthGuard } from 'src/auth/guards/auth/auth.guard';
 
 @Controller('tareas')
 export class TareasController {
   constructor(private readonly tareasService: TareasService) {}
 
   @Post()
-  create(@Body() createTareaDto: CreateTareaDto) {
-    return this.tareasService.create(createTareaDto);
+  @UseGuards(AuthGuard)
+  create(@Body() createTareaDto: CreateTareaDto, @Req() req) {
+    return this.tareasService.create(createTareaDto, req.usuario);
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   findAll() {
     return this.tareasService.findAll();
   }
