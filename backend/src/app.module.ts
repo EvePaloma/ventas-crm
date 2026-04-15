@@ -10,6 +10,7 @@ import { Tarea } from './tareas/entities/tarea.entity';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { Usuario } from './usuarios/entities/usuario.entity';
 import { AuthModule } from './auth/auth.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -31,5 +32,6 @@ import { AuthModule } from './auth/auth.module';
     UsuariosModule,
     AuthModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
