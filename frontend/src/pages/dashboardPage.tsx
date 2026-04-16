@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Users, LayoutDashboard, TrendingUp } from 'lucide-react';
+import { Users, TrendingUp } from 'lucide-react';
 import { getClientes } from '../services/clienteServices';
 
 export const DashboardPage = () => {
