@@ -11,6 +11,8 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { Usuario } from './usuarios/entities/usuario.entity';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
+import { RolModule } from './roles/roles.module';
+import { Rol } from './roles/entities/role.entity';
 
 @Module({
   imports: [
@@ -22,7 +24,7 @@ import { AppController } from './app.controller';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Cliente, Venta, Tarea, Usuario],
+      entities: [Cliente, Venta, Tarea, Usuario, Rol],
       synchronize: true,
       dropSchema: false,
     }),
@@ -31,6 +33,7 @@ import { AppController } from './app.controller';
     TareasModule,
     UsuariosModule,
     AuthModule,
+    RolModule,
   ],
   controllers: [AppController],
 })

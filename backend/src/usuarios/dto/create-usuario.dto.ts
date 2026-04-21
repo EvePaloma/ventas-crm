@@ -1,13 +1,15 @@
-import { IsEmail, IsEnum, IsNotEmpty, min, MinLength } from "class-validator";
-import { RolUsuario } from "../entities/usuario.entity";
+import { IsEmail, IsNotEmpty, IsNumber, MinLength } from 'class-validator';
 
 export class CreateUsuarioDto {
-    @IsEmail({}, { message: 'El correo no es válido' })
-    email: string;
+  @IsEmail({}, { message: 'El formato del email no es válido' })
+  @IsNotEmpty({ message: 'El email es obligatorio' })
+  email: string;
 
-    @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
-    password: string;
+  @IsNotEmpty({ message: 'La contraseña es obligatoria' })
+  @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
+  password: string;
 
-    @IsEnum(RolUsuario, { message: 'El rol no es válido' })
-    rol: RolUsuario;
+  @IsNumber({}, { message: 'El rolId debe ser un número' })
+  @IsNotEmpty({ message: 'El ID de rol es obligatorio' })
+  rolId: number; 
 }

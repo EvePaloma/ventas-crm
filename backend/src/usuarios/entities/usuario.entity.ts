@@ -1,13 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, BeforeInsert, OneToMany } from 'typeorm';
+import { 
+  Entity, 
+  PrimaryGeneratedColumn, 
+  Column, 
+  CreateDateColumn, 
+  BeforeInsert, 
+  OneToMany, 
+  ManyToOne 
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Cliente } from '../../clientes/entities/cliente.entity';
-import { Tarea } from 'src/tareas/entities/tarea.entity';
-
-export enum RolUsuario {
-    ADMIN = 'admin',
-    USUARIO = 'usuario',
-    VENDEDOR = 'vendedor',
-}
+import { Tarea } from '../../tareas/entities/tarea.entity'; 
+import { Rol } from '../../roles/entities/role.entity'; 
 
 @Entity('usuarios')
 export class Usuario {
@@ -17,15 +20,11 @@ export class Usuario {
     @Column({ unique: true })
     email: string;
 
-    @Column({select: false})
+    @Column({ select: false }) 
     password: string;
 
-    @Column({ 
-        type: 'enum',
-        enum: RolUsuario, 
-        default: RolUsuario.USUARIO 
-    })
-    rol: RolUsuario;
+    @ManyToOne(() => Rol, (rol) => rol.usuarios, { eager: true })
+    rol: Rol;
 
     @CreateDateColumn()
     fechaAlta: Date;
@@ -35,4 +34,11 @@ export class Usuario {
 
     @OneToMany(() => Tarea, (tarea) => tarea.vendedor)
     tareas: Tarea[];
+
+    @BeforeInsert()
+    async hashPassword() {
+        if (this.password) {
+            this.password = await bcrypt.hash(this.password, 10);
+        }
+    }
 }

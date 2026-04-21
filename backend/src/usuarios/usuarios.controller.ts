@@ -8,6 +8,8 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 
 
 @Controller('usuarios')
+@UseGuards(AuthGuard, RolesGuard) 
+@Roles('admin')
 export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
@@ -18,7 +20,7 @@ export class UsuariosController {
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('amin')
+  @Roles('admin')
   findAll() {
     return this.usuariosService.findAll();
   }
