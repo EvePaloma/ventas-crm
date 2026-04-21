@@ -14,7 +14,7 @@ export class ClientesController {
     return this.clientesService.create(createClienteDto, req.usuario);
   }
 
-  //@UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.clientesService.findAll();
