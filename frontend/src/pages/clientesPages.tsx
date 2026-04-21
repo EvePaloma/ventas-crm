@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-import { ClientesTable } from '../components/clientesTabla';
+import { ClientesTable } from '../components/clientes/clientesTabla';
 import { getClientes, createCliente } from '../services/clienteServices';
 import type { Cliente } from '../types/cliente';
-import { ClienteForm } from '../components/clienteForm';
+import { ClienteForm } from '../components/clientes/clienteForm';
 
 export const ClientesPage = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 1. Función para cargar los datos (la sacamos aparte para reusarla)
   const fetchClientes = async () => {
     try {
       const data = await getClientes();
@@ -18,17 +17,15 @@ export const ClientesPage = () => {
     }
   };
 
-  // 2. Carga inicial
   useEffect(() => {
     fetchClientes();
   }, []);
 
-  // 3. Función para manejar el guardado
   const handleCreate = async (nuevoCliente: Omit<Cliente, 'id'>) => {
     try {
-      await createCliente(nuevoCliente); // Enviamos al backend
-      setIsModalOpen(false);             // Cerramos el modal
-      await fetchClientes();             // Refrescamos la tabla con datos frescos
+      await createCliente(nuevoCliente); 
+      setIsModalOpen(false);             
+      await fetchClientes();             
     } catch (error) {
       alert("No se pudo guardar el cliente. Revisá la consola.");
     }
@@ -51,7 +48,7 @@ export const ClientesPage = () => {
       {isModalOpen && (
         <ClienteForm 
           onClose={() => setIsModalOpen(false)} 
-          onSubmit={handleCreate} // Conectamos la función de arriba
+          onSubmit={handleCreate} 
         />
       )}
     </div>
