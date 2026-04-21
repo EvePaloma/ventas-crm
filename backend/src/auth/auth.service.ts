@@ -16,7 +16,7 @@ export class AuthService {
     }
 
     async validarUsuario(email: string, passwordPlana: string) {
-    const usuario = await this.usuariosService.findByEmailWhitPassword(email);
+    const usuario = await this.usuariosService.findByEmailWithPassword(email);
     
     if (!usuario) throw new UnauthorizedException('Usuario no encontrado en DB');
 

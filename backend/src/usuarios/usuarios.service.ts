@@ -26,12 +26,13 @@ export class UsuariosService {
     return await this.usuarioRepository.save(nuevoUsuario);
   }
 
-  async findByEmailWhitPassword(email: string) {
-    return await this.usuarioRepository.findOne({
-      where: { email },
-      select: ['id', 'email', 'password', 'rol'], 
-    });
-  }
+  async findByEmailWithPassword(email: string) {
+  return await this.usuarioRepository
+    .createQueryBuilder('usuario') 
+    .addSelect('usuario.password')  
+    .where('usuario.email = :email', { email }) 
+    .getOne(); 
+}
 
   async findAll() {
     return await this.usuarioRepository.find();
