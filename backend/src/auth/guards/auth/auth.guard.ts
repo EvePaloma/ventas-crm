@@ -24,7 +24,6 @@ export class AuthGuard implements CanActivate {
     }
 
     private extractTokenFromHeader(request: Request): string | undefined {
-    // Usamos el método .get() de Express que ya tiene los tipos bien definidos
     const authHeader = request.get('authorization'); 
     
     if (!authHeader) return undefined;
