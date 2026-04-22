@@ -27,6 +27,9 @@ export const Sidebar = () => {
           <Link to="/clientes" className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive('/clientes')}`}>
             <Users size={20} /> Clientes
           </Link>
+          <Link to="/usuarios" className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive('/usuarios')}`}>
+            <Users size={20} /> Usuarios
+          </Link>
           <Link to="/configuracion" className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive('/configuracion')}`}>
             <Settings size={20} /> Configuración
           </Link>

@@ -15,7 +15,6 @@ export const DashboardPage = () => {
     <div>
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-slate-800">Panel de Control</h2>
-        <p className="text-slate-500">Bienvenida de nuevo. Esto es lo que está pasando hoy.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

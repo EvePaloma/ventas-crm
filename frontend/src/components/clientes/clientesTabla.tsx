@@ -1,4 +1,4 @@
-import type { Cliente } from '../types/cliente';
+import type { Cliente } from '../../types/cliente';
 
 interface Props {
   data: Cliente[];
