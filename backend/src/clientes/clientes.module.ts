@@ -10,7 +10,6 @@ import { CacheModule } from '@nestjs/cache-manager';
   imports: [
     TypeOrmModule.forFeature([Cliente]),
     forwardRef(() => AuthModule),
-    AuthModule,
     CacheModule.register(),
   ],
   controllers: [ClientesController],

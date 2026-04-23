@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { Repository } from 'typeorm';
@@ -16,6 +16,20 @@ export class ClientesService {
     private cacheManager: Cache, // <-- Inyectamos Redis
   ) {}
 
+  private obtenerUsuarioId(usuario: any) {
+    return usuario?.id ?? usuario?.sub;
+  }
+
+  private esAdmin(usuario: any) {
+    return usuario?.rol === 'admin';
+  }
+
+  private async limpiarCacheCliente(vendedorId: number) {
+    await this.cacheManager.del('todos_las_clientes');
+    await this.cacheManager.del(`clientes_usuario_${vendedorId}`);
+    await this.cacheManager.del('clientes_admin');
+  }
+
   async create(createClienteDto: CreateClienteDto, usuario: any) {
     const vendedorId = usuario.id || usuario.sub;
     
@@ -25,51 +39,54 @@ export class ClientesService {
     });
 
     const clienteGuardado = await this.clienteRepository.save(nuevoCliente);
-    // Limpiamos la caché de clientes al crear uno nuevo
-    await this.cacheManager.del('todos_las_clientes'); 
+    await this.limpiarCacheCliente(vendedorId);
     return clienteGuardado;
   }
 
-  async findAll() {
-    // Intentamos obtener de Redis
-    const clientesCache = await this.cacheManager.get<Cliente[]>('todos_las_clientes');
+  async findAll(usuario: any) {
+    const usuarioId = this.obtenerUsuarioId(usuario);
+    const cacheKey = this.esAdmin(usuario) ? 'clientes_admin' : `clientes_usuario_${usuarioId}`;
+
+    const clientesCache = await this.cacheManager.get<Cliente[]>(cacheKey);
     if (clientesCache) return clientesCache;
 
-    // Si no está, vamos a la DB
     const clientes = await this.clienteRepository.find({
+      where: this.esAdmin(usuario) ? undefined : { vendedor: { id: usuarioId } },
       relations: ['ventas', 'vendedor', 'tareas'],
     });
 
-    // Guardamos en Redis
-    await this.cacheManager.set('todos_las_clientes', clientes);
+    await this.cacheManager.set(cacheKey, clientes);
     return clientes;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, usuario: any) {
     const cliente = await this.clienteRepository.findOne({
       where: { id },
       relations: ['ventas', 'vendedor', 'tareas'],
     });
 
     if (!cliente) throw new NotFoundException(`Cliente no encontrado`);
+    if (!this.esAdmin(usuario) && cliente.vendedor?.id !== this.obtenerUsuarioId(usuario)) {
+      throw new ForbiddenException('No tienes permiso para ver este cliente');
+    }
     return cliente;
   }
 
-  async update(id: number, updateClienteDto: UpdateClienteDto) {
-    const cliente = await this.findOne(id);
+  async update(id: number, updateClienteDto: UpdateClienteDto, usuario: any) {
+    const cliente = await this.findOne(id, usuario);
     const clienteEditado = this.clienteRepository.merge(cliente, updateClienteDto);
     
     const actualizado = await this.clienteRepository.save(clienteEditado);
-    await this.cacheManager.del('todos_las_clientes');
+    await this.limpiarCacheCliente(cliente.vendedor.id);
     return actualizado;
   }
 
-  async deshabilitar(id: number) {
-    const cliente = await this.findOne(id);
+  async deshabilitar(id: number, usuario: any) {
+    const cliente = await this.findOne(id, usuario);
     cliente.estado = 'inactivo';
     
     const deshabilitado = await this.clienteRepository.save(cliente);
-    await this.cacheManager.del('todos_las_clientes');
+    await this.limpiarCacheCliente(cliente.vendedor.id);
     return deshabilitado;
   }
 }

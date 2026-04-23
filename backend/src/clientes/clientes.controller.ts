@@ -19,25 +19,25 @@ export class ClientesController {
 
   @Get()
   @Roles('admin', 'vendedor')
-  findAll() {
-    return this.clientesService.findAll();
+  findAll(@Request() req: any) {
+    return this.clientesService.findAll(req.usuario);
   }
 
   @Get(':id')
   @Roles('admin', 'vendedor')
-  findOne(@Param('id') id: string) {
-    return this.clientesService.findOne(+id);
+  findOne(@Param('id') id: string, @Request() req: any) {
+    return this.clientesService.findOne(+id, req.usuario);
   }
 
   @Patch(':id')
   @Roles('admin', 'vendedor')
-  update(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto) {
-    return this.clientesService.update(+id, updateClienteDto);
+  update(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto, @Request() req: any) {
+    return this.clientesService.update(+id, updateClienteDto, req.usuario);
   }
 
   @Delete(':id')
   @Roles('admin')
-  remove(@Param('id') id: string) {
-    return this.clientesService.deshabilitar(+id);
+  remove(@Param('id') id: string, @Request() req: any) {
+    return this.clientesService.deshabilitar(+id, req.usuario);
   }
 }
