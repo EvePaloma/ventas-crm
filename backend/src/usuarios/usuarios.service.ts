@@ -4,6 +4,7 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuariosService {
@@ -17,6 +18,7 @@ export class UsuariosService {
 
     const nuevoUsuario = this.usuarioRepository.create({
       ...datosUsuario,
+      email: datosUsuario.email.trim().toLowerCase(),
       rol: { id: rolId }, 
     });
 
@@ -36,11 +38,12 @@ export class UsuariosService {
   }
 
   async findByEmailWithPassword(email: string) {
+    const emailNormalizado = email.trim().toLowerCase();
     return await this.usuarioRepository
       .createQueryBuilder('usuario') 
       .addSelect('usuario.password')  
       .leftJoinAndSelect('usuario.rol', 'rol') 
-      .where('usuario.email = :email', { email }) 
+      .where('usuario.email = :email', { email: emailNormalizado }) 
       .getOne(); 
   }
 
@@ -66,12 +69,17 @@ export class UsuariosService {
     const { rolId, ...datosUpdate } = updateUsuarioDto;
     
     const usuario = await this.findOne(id);
-    
-    const datosParaMezclar = {
+
+    const datosParaMezclar: any = {
       ...datosUpdate,
+      ...(datosUpdate.email && { email: datosUpdate.email.trim().toLowerCase() }),
       ...(rolId && { rol: { id: rolId } })
     };
 
+    if (datosUpdate.password) {
+      datosParaMezclar.password = await bcrypt.hash(datosUpdate.password, 10);
+    }
+    
     this.usuarioRepository.merge(usuario, datosParaMezclar);
     const usuarioActualizado = await this.usuarioRepository.save(usuario);
     
