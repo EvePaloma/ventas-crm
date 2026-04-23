@@ -17,7 +17,9 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/clientes" element={<ClientesPage />} />
-            <Route path="/usuarios" element={<UsuariosPage />} />
+            <Route element={<RutaProtegida requiredRoles={['admin']} />}>
+              <Route path="/usuarios" element={<UsuariosPage />} />
+            </Route>
             {/* "Ventas", iría acá:
             <Route path="/ventas" element={<VentasPage />} /> */}
           </Route>

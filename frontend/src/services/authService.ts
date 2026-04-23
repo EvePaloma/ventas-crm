@@ -1,10 +1,10 @@
 import api from '../api/api'; 
+import type { AuthResponse, UsuarioSesion } from '../types/usuario';
 
 export const login = async (email: string, password: string) => {
   
   const response = await api.post('/auth/login', { email, password });
-  
-  const { token, usuario } = response.data;
+  const { token, usuario } = response.data as AuthResponse;
 
   if (token) {
     sessionStorage.setItem('token', token);
@@ -27,5 +27,5 @@ export const getToken = () => {
 
 export const getUsuario = () => {
   const user = sessionStorage.getItem('usuario');
-  return user ? JSON.parse(user) : null;
+  return user ? (JSON.parse(user) as UsuarioSesion) : null;
 };

@@ -3,5 +3,5 @@ export interface Cliente {
   nombre: string;
   email: string;
   telefono?: string;
-  estado: 'nuevo' | 'contactado' | 'venta_cerrada';
+  estado: 'nuevo' | 'contactado' | 'venta_cerrada' | 'inactivo';
 }

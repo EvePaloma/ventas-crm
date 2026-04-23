@@ -1,14 +1,9 @@
 import { Pencil, Trash2 } from 'lucide-react';
-
-interface Usuario {
-  id: number;
-  email: string;
-  rol: { nombre: string };
-}
+import type { UsuarioListado } from '../../types/usuario';
 
 interface Props {
-  usuarios: Usuario[];
-  onEdit: (usuario: Usuario) => void;
+  usuarios: UsuarioListado[];
+  onEdit: (usuario: UsuarioListado) => void;
   onDelete: (id: number) => void;
 }
 

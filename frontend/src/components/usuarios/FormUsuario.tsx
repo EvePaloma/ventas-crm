@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import type { UsuarioListado, UsuarioFormData } from '../../types/usuario';
 
 interface Props {
   onClose: () => void;
-  onSubmit: (data: any) => void;
-  usuarioToEdit?: any; // Prop opcional para edición
+  onSubmit: (data: UsuarioFormData) => void;
+  usuarioToEdit?: UsuarioListado;
 }
 
 export const UsuarioForm = ({ onClose, onSubmit, usuarioToEdit }: Props) => {

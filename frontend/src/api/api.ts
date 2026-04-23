@@ -20,6 +20,11 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       console.error('Sesión expirada o no autorizada');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('usuario');
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

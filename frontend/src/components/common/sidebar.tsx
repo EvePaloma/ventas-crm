@@ -1,10 +1,11 @@
-import { Users, LayoutDashboard, Settings, LogOut } from 'lucide-react'; 
+import { Users, LayoutDashboard, LogOut } from 'lucide-react'; 
 import { Link, useLocation, useNavigate } from 'react-router-dom'; 
-import { logout } from '../../services/authService'; 
+import { getUsuario, logout } from '../../services/authService'; 
 
 export const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate(); 
+  const usuario = getUsuario();
 
   const isActive = (path: string) => 
     location.pathname === path 
@@ -27,12 +28,11 @@ export const Sidebar = () => {
           <Link to="/clientes" className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive('/clientes')}`}>
             <Users size={20} /> Clientes
           </Link>
-          <Link to="/usuarios" className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive('/usuarios')}`}>
-            <Users size={20} /> Usuarios
-          </Link>
-          <Link to="/configuracion" className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive('/configuracion')}`}>
-            <Settings size={20} /> Configuración
-          </Link>
+          {usuario?.rol === 'admin' && (
+            <Link to="/usuarios" className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive('/usuarios')}`}>
+              <Users size={20} /> Usuarios
+            </Link>
+          )}
         </nav>
       </div>
 
